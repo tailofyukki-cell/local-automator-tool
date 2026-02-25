@@ -1,0 +1,101 @@
+{
+  "name": "条件分岐付きファイル処理",
+  "description": "ファイルの存在確認と条件分岐を使ったサンプルフロー。ファイルが存在する場合のみ処理を実行します。",
+  "actions": [
+    {
+      "id": "step01",
+      "type": "variable.get_date",
+      "name": "現在日時を取得",
+      "params": {
+        "format": "%Y-%m-%d %H:%M:%S",
+        "var_name": "process_time"
+      },
+      "enabled": true
+    },
+    {
+      "id": "step02",
+      "type": "variable.set",
+      "name": "処理対象ファイルパスを設定",
+      "params": {
+        "name": "target_file",
+        "value": "C:\\Work\\data.csv"
+      },
+      "enabled": true
+    },
+    {
+      "id": "step03",
+      "type": "command.run",
+      "name": "ファイル存在確認",
+      "params": {
+        "command": "if exist \"{{target_file}}\" (echo EXISTS) else (echo NOT_FOUND)",
+        "shell": true,
+        "output_var": "file_check_result",
+        "timeout": "10",
+        "encoding": "cp932"
+      },
+      "enabled": true
+    },
+    {
+      "id": "step04",
+      "type": "condition.if",
+      "name": "ファイルが存在するか確認",
+      "params": {
+        "left": "{{file_check_result}}",
+        "operator": "contains",
+        "right": "EXISTS"
+      },
+      "enabled": true
+    },
+    {
+      "id": "step05",
+      "type": "file.create_folder",
+      "name": "出力フォルダを作成",
+      "params": {
+        "path": "C:\\Work\\output",
+        "exist_ok": true
+      },
+      "enabled": true
+    },
+    {
+      "id": "step06",
+      "type": "file.copy",
+      "name": "ファイルを出力フォルダにコピー",
+      "params": {
+        "src": "{{target_file}}",
+        "dst": "C:\\Work\\output\\data_{{now.timestamp}}.csv"
+      },
+      "enabled": true
+    },
+    {
+      "id": "step07",
+      "type": "file.append_text",
+      "name": "処理完了ログを記録",
+      "params": {
+        "path": "C:\\Work\\process_log.txt",
+        "content": "{{process_time}} - 処理完了: {{target_file}}",
+        "newline": true,
+        "encoding": "utf-8"
+      },
+      "enabled": true
+    },
+    {
+      "id": "step08",
+      "type": "condition.endif",
+      "name": "END IF",
+      "params": {},
+      "enabled": true
+    },
+    {
+      "id": "step09",
+      "type": "file.append_text",
+      "name": "実行完了ログを記録",
+      "params": {
+        "path": "C:\\Work\\process_log.txt",
+        "content": "{{process_time}} - フロー実行完了",
+        "newline": true,
+        "encoding": "utf-8"
+      },
+      "enabled": true
+    }
+  ]
+}

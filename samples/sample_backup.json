@@ -1,0 +1,58 @@
+{
+  "name": "デイリーバックアップ",
+  "description": "指定フォルダのファイルを日付付きバックアップフォルダにコピーするサンプルフロー",
+  "actions": [
+    {
+      "id": "step01",
+      "type": "variable.get_date",
+      "name": "今日の日付を取得",
+      "params": {
+        "format": "%Y%m%d",
+        "var_name": "today"
+      },
+      "enabled": true
+    },
+    {
+      "id": "step02",
+      "type": "variable.set",
+      "name": "バックアップ先パスを設定",
+      "params": {
+        "name": "backup_dir",
+        "value": "C:\\Backup\\{{today}}"
+      },
+      "enabled": true
+    },
+    {
+      "id": "step03",
+      "type": "file.create_folder",
+      "name": "バックアップフォルダを作成",
+      "params": {
+        "path": "{{backup_dir}}",
+        "exist_ok": true
+      },
+      "enabled": true
+    },
+    {
+      "id": "step04",
+      "type": "file.copy",
+      "name": "重要ファイルをコピー",
+      "params": {
+        "src": "C:\\Work\\important.txt",
+        "dst": "{{backup_dir}}\\important.txt"
+      },
+      "enabled": true
+    },
+    {
+      "id": "step05",
+      "type": "file.append_text",
+      "name": "バックアップログを記録",
+      "params": {
+        "path": "C:\\Backup\\backup_log.txt",
+        "content": "{{now.datetime}} - バックアップ完了: {{backup_dir}}",
+        "newline": true,
+        "encoding": "utf-8"
+      },
+      "enabled": true
+    }
+  ]
+}

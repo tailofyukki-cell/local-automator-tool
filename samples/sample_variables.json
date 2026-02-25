@@ -1,0 +1,82 @@
+{
+  "name": "変数処理デモ",
+  "description": "変数の設定・文字列操作・数値計算・日付取得を使ったデモフロー",
+  "actions": [
+    {
+      "id": "step01",
+      "type": "variable.set",
+      "name": "プロジェクト名を設定",
+      "params": {
+        "name": "project_name",
+        "value": "MyProject"
+      },
+      "enabled": true
+    },
+    {
+      "id": "step02",
+      "type": "variable.get_date",
+      "name": "タイムスタンプを取得",
+      "params": {
+        "format": "%Y%m%d_%H%M%S",
+        "var_name": "timestamp"
+      },
+      "enabled": true
+    },
+    {
+      "id": "step03",
+      "type": "variable.string_concat",
+      "name": "出力ファイル名を生成",
+      "params": {
+        "parts": "{{project_name}}\n_\n{{timestamp}}\n.log",
+        "separator": "",
+        "var_name": "output_filename"
+      },
+      "enabled": true
+    },
+    {
+      "id": "step04",
+      "type": "variable.math_calc",
+      "name": "ファイルサイズ計算（KB→MB変換）",
+      "params": {
+        "expression": "1024 / 1024",
+        "var_name": "size_mb",
+        "decimal_places": "2"
+      },
+      "enabled": true
+    },
+    {
+      "id": "step05",
+      "type": "variable.string_replace",
+      "name": "パス区切り文字を変換",
+      "params": {
+        "source": "C:/Work/{{project_name}}/output",
+        "find": "/",
+        "replace": "\\",
+        "var_name": "output_path",
+        "use_regex": false
+      },
+      "enabled": true
+    },
+    {
+      "id": "step06",
+      "type": "file.create_folder",
+      "name": "出力フォルダを作成",
+      "params": {
+        "path": "{{output_path}}",
+        "exist_ok": true
+      },
+      "enabled": true
+    },
+    {
+      "id": "step07",
+      "type": "file.write_text",
+      "name": "レポートファイルを作成",
+      "params": {
+        "path": "{{output_path}}\\{{output_filename}}",
+        "content": "プロジェクト: {{project_name}}\n生成日時: {{now.datetime}}\nサイズ: {{size_mb}} MB\n出力先: {{output_path}}",
+        "encoding": "utf-8"
+      },
+      "enabled": true
+    }
+  ]
+}
